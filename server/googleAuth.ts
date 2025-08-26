@@ -34,8 +34,8 @@ export async function setupAuth(app: Express) {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  const GOOGLE_CLIENT_ID = "778822215477-dd1v.apps.googleusercontent.com";
-  const GOOGLE_CLIENT_SECRET = "YOUR_GOOGLE_CLIENT_SECRET"; // Replace with actual secret
+  const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+  const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
   const redirectUri =
     process.env.NODE_ENV === "production"
