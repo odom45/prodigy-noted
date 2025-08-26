@@ -137,3 +137,19 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+# Replit-specific
+.replit
+*.replit
+*.replit.db
+.replit.history
+
+# Stripe keys and payout config
+.env.local
+.env.production
+.env.development
+.env.staging
+
+# Admin-only config
+admin-config.json
+payout-logic.js
+receipt-template.html
