@@ -34,13 +34,13 @@ export async function setupAuth(app: Express) {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-  const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+  const GOOGLE_CLIENT_ID = "778822215477-dd1v.apps.googleusercontent.com";
+  const GOOGLE_CLIENT_SECRET = "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"; // Replace with actual secret if different
 
   const redirectUri =
     process.env.NODE_ENV === "production"
       ? "https://note-genius-benjaminjodom45.replit.app/api/auth/google/callback"
-      : "http://localhost:5000/api/auth/google/callback";
+      : "http://0.0.0.0:5000/api/auth/google/callback";
 
   passport.use(
     new GoogleStrategy(
