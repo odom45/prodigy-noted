@@ -138,6 +138,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createGenre(genreData: InsertGenre): Promise<Genre> {
+    const existingGenres = await this.getGenres();
+    if (existingGenres.length >= 8) {
+      throw new Error("Maximum number of genres reached");
+    }
     const [genre] = await db.insert(genres).values(genreData).returning();
     return genre;
   }
