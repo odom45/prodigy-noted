@@ -1,7 +1,7 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import session from "express-session";
-import type { Express } from "express";
+import type { Express, RequestHandler } from "express";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
 
@@ -105,3 +105,10 @@ export async function setupAuth(app: Express) {
     });
   });
 }
+
+export const isAuthenticated: RequestHandler = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect("/api/login");
+};
