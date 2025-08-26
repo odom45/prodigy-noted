@@ -1,0 +1,19 @@
+
+---
+
+## ✅ Step 6: `CODEOWNERS`
+
+### 🔍 Navigation:
+1. Create a `.github` folder in your repo.
+2. Inside `.github`, create a file named `CODEOWNERS`.
+
+### 📋 Copy-Paste Template:
+```plaintext
+# UI Components
+client/src/components/ui/* @odom45
+
+# Payout Logic
+server/* @odom45
+
+# Config & Deployment
+*.config.* @odom45
