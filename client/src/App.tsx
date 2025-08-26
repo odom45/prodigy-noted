@@ -22,6 +22,7 @@ function Router() {
           <Route path="/" component={Home} />
           <Route path="/admin" component={AdminDashboard} />
           <Route path="/subscribe" component={Subscribe} />
+          <Route path="/onboarding" component={OnboardingFlow} />
         </>
       )}
       <Route component={NotFound} />

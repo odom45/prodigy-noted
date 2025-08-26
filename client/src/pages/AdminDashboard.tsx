@@ -59,6 +59,11 @@ export default function AdminDashboard() {
     enabled: user?.role === 'admin',
   });
 
+  const { data: trialUsers } = useQuery({
+    queryKey: ["trialUsers"],
+    queryFn: () => apiRequest("/admin/trial-users"),
+  });
+
   const { data: topArtists = [] } = useQuery({
     queryKey: ["/api/leaderboard/artists", "10"],
     enabled: user?.role === 'admin',
