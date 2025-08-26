@@ -1,6 +1,6 @@
 # Prodigy Noted 🎶
 
-A scalable music battle platform where artists and producers compete, listeners vote, and verified winners receive automated payouts. Built for transparency, legal hygiene, and creative empowerment.
+A genre-gated music battle platform where artists compete, listeners vote, and verified winners receive automated payouts.
 
 ## 🔥 Features
 - Role-based onboarding (Artist, Producer, Listener)
@@ -11,19 +11,8 @@ A scalable music battle platform where artists and producers compete, listeners 
 - Modular architecture with secure workflows and audit trails
 
 ## 🚀 Setup
-1. Clone the repo
-2. Add your `.env` file with Stripe keys and admin config
-3. Run `npm install`
-4. Start with `npm run dev`
-
-## 🛡️ Legal & Compliance
-- Terms of Service and Privacy Policy hosted via GitHub Pages
-- Content rating logic and age gating enforced
-- Admin-only payout controls with audit trail
-
-## 📦 Deployment
-- Wrapped for Google Play Store via React Native
-- Autoscale-ready with zero config drift
-
-## 🤝 Contributing
-Coming soon — this MVP is currently closed to external contributors.
+```bash
+git clone https://github.com/odom45/prodigy-noted.git
+cd prodigy-noted
+npm install
+npm run dev
