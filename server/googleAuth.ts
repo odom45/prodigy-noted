@@ -21,7 +21,7 @@ export function getSession() {
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: false, // Set to true in production with HTTPS
+      secure: process.env.NODE_ENV === 'production', // Enable secure cookies in production
       maxAge: sessionTtl,
     },
   });
@@ -37,10 +37,15 @@ export async function setupAuth(app: Express) {
   const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "demo-client-id";
   const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || "demo-client-secret";
 
+  // Get the callback URL based on environment
+  const baseUrl = process.env.NODE_ENV === 'production' 
+    ? `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`
+    : 'http://localhost:5000';
+  
   passport.use(new GoogleStrategy({
     clientID: GOOGLE_CLIENT_ID,
     clientSecret: GOOGLE_CLIENT_SECRET,
-    callbackURL: "/api/auth/google/callback"
+    callbackURL: `${baseUrl}/api/auth/google/callback`
   }, async (accessToken, refreshToken, profile, done) => {
     try {
       // Create or update user based on Google profile
