@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import bodyParser from "body-parser";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAuth, isAuthenticated } from "./googleAuth";
 import {
   insertBattleSchema,
   insertTrackSchema,
@@ -26,8 +26,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const user = req.user;
       res.json(user);
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -73,8 +72,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/battles', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const userId = req.user.id;
+      const user = req.user;
       
       if (user?.role !== 'participant') {
         return res.status(403).json({ message: "Only participants can create battles" });
@@ -104,8 +103,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/tracks', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const userId = req.user.id;
+      const user = req.user;
       
       if (user?.role !== 'participant') {
         return res.status(403).json({ message: "Only participants can submit tracks" });
@@ -126,7 +125,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Vote routes
   app.post('/api/votes', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       
       // Check if user already voted in this battle
       const existingVote = await storage.getUserVote(userId, req.body.battleId);
@@ -206,7 +205,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Referral routes
   app.post('/api/referrals', isAuthenticated, async (req: any, res) => {
     try {
-      const referrerId = req.user.claims.sub;
+      const referrerId = req.user.id;
       const referralData = insertReferralSchema.parse({
         ...req.body,
         referrerId,
@@ -222,7 +221,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Stripe subscription routes
   app.post('/api/get-or-create-subscription', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       let user = await storage.getUser(userId);
       
       if (!user) {
