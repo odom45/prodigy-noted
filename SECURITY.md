@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🔐 Security Policy
 
 ## Reporting Vulnerabilities
@@ -16,3 +17,16 @@ Do not publicly disclose vulnerabilities until patched.
 
 ## Dependency Monitoring
 We use Semgrep and GitHub Dependabot to scan for CVEs and misconfigurations.
+=======
+# Security Policy
+
+## Audit Summary
+- Last scan: August 26, 2025
+- Tool: Replit Semgrep Scanner
+- Result: No known vulnerabilities
+
+## Known Advisory (Deferred)
+- esbuild <=0.24.2
+- Advisory: [GHSA-67mh-4wv8-2f99](https://github.com/advisories/GHSA-67mh-4wv8-2f99)
+- Mitigation: No public exposure. Upgrade deferred pending Vite compatibility audit.
+>>>>>>> 6f7e8e0 (Security scan passed: patched and documented)
