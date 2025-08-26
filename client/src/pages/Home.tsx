@@ -10,17 +10,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { Music, Plus } from "lucide-react";
+import type { Genre, Battle, User } from "@shared/schema";
 
 export default function Home() {
   const { user } = useAuth();
   const [selectedGenre, setSelectedGenre] = useState<string>("");
 
-  const { data: battles = [], isLoading: battlesLoading } = useQuery({
+  const { data: battles = [], isLoading: battlesLoading } = useQuery<Battle[]>({
     queryKey: ["/api/battles", selectedGenre],
     enabled: true,
   });
 
-  const { data: genres = [] } = useQuery({
+  const { data: genres = [] } = useQuery<Genre[]>({
     queryKey: ["/api/genres"],
   });
 

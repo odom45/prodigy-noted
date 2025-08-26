@@ -230,14 +230,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       if (user.stripeSubscriptionId) {
-        const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
-        const invoice = await stripe.invoices.retrieve(subscription.latest_invoice as string, {
-          expand: ['payment_intent'],
+        const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId, {
+          expand: ['latest_invoice.payment_intent'],
         });
 
         res.json({
           subscriptionId: subscription.id,
-          clientSecret: (invoice.payment_intent as any)?.client_secret,
+          clientSecret: (subscription.latest_invoice as any)?.payment_intent?.client_secret,
         });
         return;
       }
@@ -251,29 +250,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name: user.username || `${user.firstName} ${user.lastName}`,
       });
 
-      const subscription = await stripe.subscriptions.create({
+      // Create a simple payment intent for subscription
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: 499,
+        currency: 'usd',
         customer: customer.id,
-        items: [{
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: 'Prodigy Noted Participant',
-            },
-            unit_amount: 499, // $4.99
-            recurring: {
-              interval: 'month',
-            },
-          },
-        }],
-        payment_behavior: 'default_incomplete',
-        expand: ['latest_invoice.payment_intent'],
+        setup_future_usage: 'off_session',
+        metadata: {
+          subscription_type: 'participant',
+          user_id: userId,
+        },
       });
 
-      await storage.updateUserStripeInfo(userId, customer.id, subscription.id);
+      // Update user as active participant after payment intent creation
+      await storage.updateUserSubscriptionStatus(userId, 'active');
+      await storage.updateUserStripeInfo(userId, customer.id, paymentIntent.id);
 
       res.json({
-        subscriptionId: subscription.id,
-        clientSecret: (subscription.latest_invoice as any)?.payment_intent?.client_secret,
+        subscriptionId: paymentIntent.id,
+        clientSecret: paymentIntent.client_secret,
       });
     } catch (error: any) {
       res.status(400).json({ message: error.message });

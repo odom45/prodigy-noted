@@ -76,6 +76,7 @@ export interface IStorage {
     trialConversions: number;
     revenue: number;
   }>;
+  updateUserSubscriptionStatus(id: string, status: string): Promise<User>;
   upsertAdminSettings(adminId: string, settings: Partial<AdminSettings>): Promise<AdminSettings>;
 }
 
@@ -127,6 +128,18 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
+  async updateUserSubscriptionStatus(id: string, status: string): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({
+        subscriptionStatus: status as any,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
   // Genre operations
   async getGenres(): Promise<Genre[]> {
     return await db.select().from(genres);
@@ -159,15 +172,16 @@ export class DatabaseStorage implements IStorage {
   async getBattles(genreId?: string, status?: string): Promise<Battle[]> {
     let query = db.select().from(battles);
     
-    if (genreId && status) {
-      query = query.where(and(eq(battles.genreId, genreId), eq(battles.status, status as any)));
-    } else if (genreId) {
-      query = query.where(eq(battles.genreId, genreId));
-    } else if (status) {
-      query = query.where(eq(battles.status, status as any));
+    let conditions = [];
+    if (genreId) conditions.push(eq(battles.genreId, genreId));
+    if (status) conditions.push(eq(battles.status, status as any));
+    
+    if (conditions.length > 0) {
+      query = query.where(conditions.length === 1 ? conditions[0] : and(...conditions));
     }
     
-    return await query.orderBy(desc(battles.createdAt));
+    const results = await query.orderBy(desc(battles.createdAt));
+    return results;
   }
 
   async getBattle(id: string): Promise<Battle | undefined> {
@@ -263,7 +277,7 @@ export class DatabaseStorage implements IStorage {
   async getAvailableTrialSlots(genreId: string): Promise<number> {
     const [genre] = await db.select().from(genres).where(eq(genres.id, genreId));
     if (!genre) return 0;
-    return Math.max(0, genre.maxTrialSlots - genre.filledTrialSlots);
+    return Math.max(0, (genre.maxTrialSlots ?? 0) - (genre.filledTrialSlots ?? 0));
   }
 
   async grantTrialSlot(userId: string, genreId: string): Promise<TrialSlot> {
