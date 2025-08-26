@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Logs
 logs
 *.log
@@ -153,3 +154,11 @@ vite.config.ts.timestamp-*
 admin-config.json
 payout-logic.js
 receipt-template.html
+=======
+node_modules
+dist
+.DS_Store
+server/public
+vite.config.ts.*
+*.tar.gz
+>>>>>>> 124e800 (Checkpoint before assistant change: Update project setup and dependencies for enhanced functionality)
