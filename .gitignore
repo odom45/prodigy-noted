@@ -72,14 +72,8 @@ Thumbs.db
 # ========================
 # 🧾 Logs & Temp Files
 # ========================
+logs/
 *.log
 *.tmp
 *.swp
 *.bak
-
-# ========================
-# 🧼 Repo Hygiene
-# ========================
-.gitignore
-LICENSE.md
-README.md

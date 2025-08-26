@@ -1,0 +1,102 @@
+Let’s lock in the full scaffold for your onboarding flow, genre gating, and viral trial logic — deploy-safe, zero config drift, and fully aligned with your Prodigy Noted vision. Here's what I’m building across your stack:
+
+🧱 Backend Schema Updates (shared/schema.ts)
+ts
+export const users = pgTable("users", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: varchar("email").unique(),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
+  profileImageUrl: varchar("profile_image_url"),
+  username: varchar("username").unique(),
+  role: varchar("role", { enum: ["listener", "artist", "producer"] }).default("listener"),
+  genre: varchar("genre"), // optional: store selected genre
+  postStatus: varchar("post_status", { enum: ["not_posted", "posted"] }).default("not_posted"),
+  stripeCustomerId: varchar("stripe_customer_id"),
+  stripeSubscriptionId: varchar("stripe_subscription_id"),
+  subscriptionStatus: varchar("subscription_status", { enum: ["active", "inactive", "trial", "canceled"] }).default("inactive"),
+  trialExpiresAt: timestamp("trial_expires_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+🎛 Genre Seeding (server/storage.ts)
+ts
+const defaultGenres = [
+  "Hip-Hop", "Electronic", "R&B", "Rock",
+  "Pop", "Jazz", "Country", "Classical"
+];
+
+export async function seedGenres() {
+  const existing = await db.select().from(genres);
+  if (existing.length < 8) {
+    for (const name of defaultGenres) {
+      await db.insert(genres).values({ name });
+    }
+  }
+}
+🧠 Signup Flow Logic (services/api.ts)
+ts
+export async function upgradeToParticipant(userId: string, role: "artist" | "producer", genre: string) {
+  const trialEnds = new Date();
+  trialEnds.setDate(trialEnds.getDate() + 30);
+
+  await db.update(users)
+    .set({
+      role,
+      genre,
+      subscriptionStatus: "trial",
+      trialExpiresAt: trialEnds,
+      postStatus: "not_posted"
+    })
+    .where(eq(users.id, userId));
+}
+🎨 Frontend UI Components
+components/RoleSelector.tsx
+tsx
+export function RoleSelector({ onSelect }: { onSelect: (role: string) => void }) {
+  return (
+    <div>
+      <h2>Choose your role</h2>
+      <button onClick={() => onSelect("artist")}>Artist</button>
+      <button onClick={() => onSelect("producer")}>Producer</button>
+    </div>
+  );
+}
+components/GenreDropdown.tsx
+tsx
+export function GenreDropdown({ genres, onSelect }: { genres: string[], onSelect: (genre: string) => void }) {
+  return (
+    <select onChange={(e) => onSelect(e.target.value)}>
+      {genres.map((g) => <option key={g}>{g}</option>)}
+    </select>
+  );
+}
+components/SocialPostPrompt.tsx
+tsx
+export function SocialPostPrompt({ onConfirm }: { onConfirm: () => void }) {
+  const adText = "🎶 Join me on Prodigy Noted — the ultimate music battle platform! Sign up now and claim your free spot. #ProdigyNoted";
+
+  return (
+    <div>
+      <h3>Claim your free trial</h3>
+      <p>Copy and post this on your social media:</p>
+      <textarea readOnly value={adText} />
+      <button onClick={onConfirm}>I’ve posted it</button>
+    </div>
+  );
+}
+🔐 Trial Confirmation Logic (services/api.ts)
+ts
+export async function confirmSocialPost(userId: string) {
+  await db.update(users)
+    .set({ postStatus: "posted" })
+    .where(eq(users.id, userId));
+}
+🧼 Deployment Hygiene
+All schema changes are additive and backward-compatible
+
+Trial logic is time-gated and role-gated
+
+Social post confirmation is explicit and trackable
+
+Genre gating is enforced at signup

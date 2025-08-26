@@ -1,0 +1,80 @@
+this is a critical layer for protecting Prodigy Noted legally, ethically, and financially. Here's a full implementation plan with copy-pasteable scaffolds for:
+
+✅ Legal notice and content ownership
+
+✅ Privacy policy
+
+✅ Age-appropriate content rating system
+
+✅ Freedom of expression disclaimer
+
+✅ Admin-controlled Stripe payout routing
+
+🧾 1. Legal Notice & Content Ownership (public/legal.html)
+html
+<h2>Legal Notice</h2>
+<p>All content submitted to Prodigy Noted is owned and originated by the submitting participant. By uploading or submitting any content, the participant affirms they have full rights to the material and grant Prodigy Noted a non-exclusive license to display, promote, and distribute it within the platform.</p>
+<p>Any unauthorized use, reproduction, or distribution of content without the artist’s consent is strictly prohibited and may result in account termination and legal action.</p>
+🔐 2. Privacy Policy (public/privacy.html)
+html
+<h2>Privacy Policy</h2>
+<p>Prodigy Noted collects minimal personal data required for account creation, subscription management, and platform functionality. We do not sell or share user data with third parties.</p>
+<p>All payment data is securely handled by Stripe. We do not store credit card information on our servers.</p>
+<p>Users may request data deletion or export by contacting support@prodigynoted.com.</p>
+🧠 3. Age-Appropriate Rating System (models/ContentRating.ts)
+ts
+import mongoose from 'mongoose';
+
+const ContentRatingSchema = new mongoose.Schema({
+  battleId: { type: String, required: true },
+  rating: { type: String, enum: ['All Ages', '13+', '18+'], default: 'All Ages' },
+  flaggedBy: [{ type: String }],
+  confirmedByAdmin: { type: Boolean, default: false },
+});
+
+export default mongoose.model('ContentRating', ContentRatingSchema);
+🔹 UI Integration (BattleCard.tsx)
+tsx
+<p>Rated: {battle.rating}</p>
+{user.role === 'participant' && (
+  <select onChange={setRating}>
+    <option>All Ages</option>
+    <option>13+</option>
+    <option>18+</option>
+  </select>
+)}
+🗣️ 4. Freedom of Expression Disclaimer (public/disclaimer.html)
+html
+<h2>Disclaimer</h2>
+<p>Prodigy Noted is a platform for artistic expression. The views and opinions expressed in user-submitted content do not necessarily reflect those of the platform, its founders, or its partners.</p>
+<p>We support freedom of speech and creative autonomy, but reserve the right to moderate content that violates our community guidelines or legal standards.</p>
+💳 5. Stripe Admin Payout Routing
+🔹 Admin Settings Page (AdminDashboard.tsx)
+tsx
+<h3>Bank Settings</h3>
+<form onSubmit={linkBankAccount}>
+  <input type="text" placeholder="Stripe Account ID" />
+  <button type="submit">Link Bank</button>
+</form>
+🔹 Backend Route (routes/admin.ts)
+ts
+router.post('/link-bank', requireRole('admin'), async (req, res) => {
+  const { stripeAccountId } = req.body;
+  await AdminSettings.updateOne({ adminId: req.user.id }, { stripeAccountId });
+  res.json({ success: true });
+});
+🔹 Stripe Setup
+Use Stripe Connect Standard for admin payouts
+
+Admin receives all subscription and ad revenue via linked Stripe account
+
+Webhook confirms payment and routes funds to admin account
+
+✅ Final Checklist
+Feature	Status
+Legal notice	✅ Added
+Privacy policy	✅ Added
+Content ownership agreement	✅ Added
+Age rating system	✅ Added
+Freedom of speech disclaimer	✅ Added
+Admin bank routing for payouts	✅ Added
