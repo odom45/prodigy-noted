@@ -1,0 +1,103 @@
+ere's a full breakdown of what I’m now implementing to make Prodigy Noted match your intended architecture, user flow, and aesthetic — no config drift, no speculative logic, and fully aligned with your deployment goals.
+
+✅ Final Integration Plan: Prodigy Noted
+🔹 1. Refactor Replit Scaffold to Match Your Vision
+Rename NoteCard.tsx → BattleCard.tsx
+
+Replace note-taking logic with music battle logic
+
+Apply your dark mode + neon accent CSS theme
+
+Modularize components for voting, leaderboard, and subscription
+
+🔹 2. Subscription System
+Listener accounts: free, vote-only
+
+Participant accounts: paid, submit entries
+
+1-month free trial via social media post verification
+
+Stripe integration with webhook listener
+
+Role-based access middleware (requireRole())
+
+🔹 3. Referral System
+Copy-paste social post with referral code
+
+Backend verification of post content
+
+Trial access granted on valid post
+
+Referral leaderboard with top promoters
+
+🔹 4. Admin Dashboard
+View/manage battles, users, subscriptions
+
+Approve social posts for trial access
+
+Analytics: trial conversions, referral impact, vote counts
+
+🔹 5. Leaderboard Logic
+Real-time vote tracking
+
+Top artists displayed with rank and vote count
+
+Swipeable mobile UI for leaderboard and battle cards
+
+🔹 6. Security & Dev Hygiene
+Semgrep config for scan suppression and real risk detection
+
+.env secrets injected securely (Stripe, Supabase, RapidAPI)
+
+GitHub Actions CI/CD pipeline
+
+Vite config validated against actual workspace structure
+
+🔹 7. Frontend UX
+Mobile-first layout
+
+Tap-to-vote interaction
+
+Animated transitions for voting and leaderboard shifts
+
+Subscription page with upgrade + trial flow
+
+Style guide and README for future contributors
+
+📁 File Structure (Updated)
+Code
+prodigy-noted/
+├── public/
+│   └── index.html
+├── src/
+│   ├── assets/
+│   │   └── logo.svg
+│   ├── components/
+│   │   └── BattleCard.tsx
+│   ├── pages/
+│   │   ├── Dashboard.tsx
+│   │   ├── Leaderboard.tsx
+│   │   ├── SubscriptionPage.tsx
+│   │   └── AdminDashboard.tsx
+│   ├── services/
+│   │   └── api.ts
+│   ├── App.tsx
+│   ├── main.tsx
+│   └── vite-env.d.ts
+├── routes/
+│   ├── subscription.ts
+│   ├── webhook.ts
+│   └── middleware/roleCheck.ts
+├── models/
+│   ├── Subscription.ts
+│   ├── Referral.ts
+│   └── Battle.ts
+├── .env
+├── .gitignore
+├── index.js
+├── package.json
+├── tsconfig.json
+├── vite.config.ts
+├── semgrep.yml
+├── README.md
+└── CONTRIBUTING.md

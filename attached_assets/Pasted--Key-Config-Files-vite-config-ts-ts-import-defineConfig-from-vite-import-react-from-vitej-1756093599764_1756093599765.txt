@@ -1,0 +1,293 @@
+🔧 Key Config Files
+vite.config.ts
+ts
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+  server: {
+    port: 3000,
+  },
+});
+tsconfig.json
+json
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "jsx": "react-jsx",
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "moduleResolution": "node",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"]
+}
+.env
+env
+VITE_API_URL=https://api.prodigy-noted.com
+📦 package.json (core dependencies)
+json
+{
+  "name": "prodigy-noted",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.0.0",
+    "typescript": "^5.2.0",
+    "vite": "^4.4.0"
+  }
+}
+✅ One-Click Build Steps
+Once you’ve copied the structure and files:
+
+Run npm install
+
+Add your .env values
+
+Run npm run dev to start the local server
+
+Validate with npm run build and npm run preview
+
+Want me to scaffold the backend Express folder too, or include a Dockerfile for deploy hygiene? I can also generate a README with setup instructions and API routes if you’re prepping for handoff or CI/CD.
+
+1github.com
+ok please write the entire file out for the entire build listed in the scaffold
+Absolutely, Ys. Here's the full build for the prodigy-noted app, with every file written out and placed correctly in the folder structure. You can copy this entire layout into your workspace for a clean, reproducible build.
+
+🗂️ Folder Structure
+plaintext
+prodigy-noted/
+├── public/
+│   └── index.html
+├── src/
+│   ├── assets/
+│   │   └── logo.svg
+│   ├── components/
+│   │   └── NoteCard.tsx
+│   ├── pages/
+│   │   └── Dashboard.tsx
+│   ├── services/
+│   │   └── api.ts
+│   ├── App.tsx
+│   ├── main.tsx
+│   └── vite-env.d.ts
+├── .env
+├── .gitignore
+├── package.json
+├── tsconfig.json
+├── vite.config.ts
+└── README.md
+🔹 public/index.html
+html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prodigy Noted</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+🔹 src/assets/logo.svg
+xml
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="40" fill="#4f46e5" />
+  <text x="50%" y="55%" text-anchor="middle" fill="#fff" font-size="20px" font-family="Arial">PN</text>
+</svg>
+🔹 src/components/NoteCard.tsx
+tsx
+import React from 'react';
+
+interface NoteCardProps {
+  title: string;
+  content: string;
+}
+
+const NoteCard: React.FC<NoteCardProps> = ({ title, content }) => (
+  <div className="note-card">
+    <h3>{title}</h3>
+    <p>{content}</p>
+  </div>
+);
+
+export default NoteCard;
+🔹 src/pages/Dashboard.tsx
+tsx
+import React, { useEffect, useState } from 'react';
+import NoteCard from '../components/NoteCard';
+import { fetchNotes } from '../services/api';
+
+const Dashboard: React.FC = () => {
+  const [notes, setNotes] = useState([]);
+
+  useEffect(() => {
+    fetchNotes().then(setNotes);
+  }, []);
+
+  return (
+    <div>
+      <h1>Dashboard</h1>
+      {notes.map((note: any) => (
+        <NoteCard key={note.id} title={note.title} content={note.content} />
+      ))}
+    </div>
+  );
+};
+
+export default Dashboard;
+🔹 src/services/api.ts
+ts
+import axios from 'axios';
+
+const API_URL = import.meta.env.VITE_API_URL;
+
+export const fetchNotes = async () => {
+  const response = await axios.get(`${API_URL}/notes`);
+  return response.data;
+};
+🔹 src/App.tsx
+tsx
+import React from 'react';
+import Dashboard from './pages/Dashboard';
+
+const App: React.FC = () => {
+  return (
+    <div className="app">
+      <Dashboard />
+    </div>
+  );
+};
+
+export default App;
+🔹 src/main.tsx
+tsx
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import './index.css';
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+🔹 src/vite-env.d.ts
+ts
+/// <reference types="vite/client" />
+🔹 .env
+env
+VITE_API_URL=https://api.prodigy-noted.com
+🔹 .gitignore
+Code
+node_modules
+dist
+.env
+🔹 package.json
+json
+{
+  "name": "prodigy-noted",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.0.0",
+    "typescript": "^5.2.0",
+    "vite": "^4.4.0"
+  }
+}
+🔹 tsconfig.json
+json
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "jsx": "react-jsx",
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "moduleResolution": "node",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"]
+}
+🔹 vite.config.ts
+ts
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+  server: {
+    port: 3000,
+  },
+});
+🔹 README.md
+md
+# Prodigy Noted
+
+A minimal note dashboard built with Vite + React + TypeScript.
+
+## Setup
+
+```bash
+npm install
+npm run dev
+Build
+bash
+npm run build
+npm run preview
+Environment
+Set your API URL in .env:
+
+Code
+VITE_API_URL=https://api.prodigy-noted.com
+Code
+
+---
+
+Let me know if you want to add backend scaffolding, Dockerfile, CI/CD config, or Semgrep rules next. I can also generate a `notes.json` mock file for local testing if you're not ready to hit the live API.
+
+
+
+
