@@ -109,7 +109,7 @@ export default function Home() {
         </section>
 
         {/* Subscription Plans */}
-        {user?.subscriptionStatus !== 'active' && (
+        {user?.membershipTier === 'free' && (
           <section id="subscription" className="py-16 px-4">
             <SubscriptionPlans user={user} data-testid="subscription-plans" />
           </section>
