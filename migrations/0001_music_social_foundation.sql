@@ -2,6 +2,19 @@
 -- Apply only after taking a database backup and reviewing existing duplicate votes.
 -- This migration intentionally does not delete or rewrite legacy data.
 
+DO $
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM votes
+    WHERE user_id IS NOT NULL AND battle_id IS NOT NULL
+    GROUP BY user_id, battle_id
+    HAVING COUNT(*) > 1
+  ) THEN
+    RAISE EXCEPTION 'Duplicate member votes exist. Resolve duplicates before applying votes_user_battle_unique.';
+  END IF;
+END $;
+
 CREATE UNIQUE INDEX IF NOT EXISTS votes_user_battle_unique ON votes(user_id, battle_id) WHERE user_id IS NOT NULL AND battle_id IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS artist_profiles (
