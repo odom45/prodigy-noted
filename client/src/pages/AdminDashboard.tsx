@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import type { Battle, User } from "@shared/schema";
 import { 
   Users, 
   Music, 
@@ -48,13 +49,13 @@ export default function AdminDashboard() {
     }
   }, [user, authLoading, isAuthenticated, toast]);
 
-  const { data: stats, isLoading: statsLoading } = useQuery({
+  const { data: stats, isLoading: statsLoading } = useQuery<{ totalUsers: number; activeBattles: number; trialConversions: number; revenue: number }>({
     queryKey: ["/api/admin/stats"],
     enabled: user?.role === 'admin',
     retry: false,
   });
 
-  const { data: battles = [] } = useQuery({
+  const { data: battles = [] } = useQuery<Battle[]>({
     queryKey: ["/api/battles"],
     enabled: user?.role === 'admin',
   });
@@ -64,7 +65,7 @@ export default function AdminDashboard() {
     queryFn: () => apiRequest("/admin/trial-users"),
   });
 
-  const { data: topArtists = [] } = useQuery({
+  const { data: topArtists = [] } = useQuery<Array<{ user: User; totalVotes: number }>>({
     queryKey: ["/api/leaderboard/artists", "10"],
     enabled: user?.role === 'admin',
   });
