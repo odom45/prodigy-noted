@@ -1,23 +1,12 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import Stripe from "stripe";
-import bodyParser from "body-parser";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import {
   insertBattleSchema,
   insertTrackSchema,
-  insertVoteSchema,
   insertReferralSchema,
 } from "@shared/schema";
-
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
-}
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2025-07-30.basil",
-});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -123,27 +112,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Vote routes
-  app.post('/api/votes', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      
-      // Check if user already voted in this battle
-      const existingVote = await storage.getUserVote(userId, req.body.battleId);
-      if (existingVote) {
-        return res.status(400).json({ message: "Already voted in this battle" });
-      }
-
-      const voteData = insertVoteSchema.parse({
-        ...req.body,
-        userId,
-      });
-
-      const vote = await storage.createVote(voteData);
-      res.json(vote);
-    } catch (error) {
-      res.status(400).json({ message: "Invalid vote data" });
-    }
+  // Voting is intentionally closed until server-verified 50% listening sessions
+  // and one-vote-per-member constraints are wired end-to-end.
+  app.post('/api/votes', isAuthenticated, async (_req, res) => {
+    res.status(503).json({
+      message: "Voting is temporarily unavailable while fair-listening verification is being implemented.",
+      code: "VOTING_ENGINE_NOT_READY",
+    });
   });
 
   app.get('/api/tracks/:trackId/votes', async (req, res) => {
@@ -219,87 +194,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Stripe subscription routes
-  app.post('/api/get-or-create-subscription', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      let user = await storage.getUser(userId);
-      
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      if (user.stripeSubscriptionId) {
-        const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId, {
-          expand: ['latest_invoice.payment_intent'],
-        });
-
-        res.json({
-          subscriptionId: subscription.id,
-          clientSecret: (subscription.latest_invoice as any)?.payment_intent?.client_secret,
-        });
-        return;
-      }
-
-      if (!user.email) {
-        return res.status(400).json({ message: 'No user email on file' });
-      }
-
-      const customer = await stripe.customers.create({
-        email: user.email,
-        name: user.username || `${user.firstName} ${user.lastName}`,
-      });
-
-      // Create a simple payment intent for subscription
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: 499,
-        currency: 'usd',
-        customer: customer.id,
-        setup_future_usage: 'off_session',
-        metadata: {
-          subscription_type: 'participant',
-          user_id: userId,
-        },
-      });
-
-      // Update user as active participant after payment intent creation
-      await storage.updateUserSubscriptionStatus(userId, 'active');
-      await storage.updateUserStripeInfo(userId, customer.id, paymentIntent.id);
-
-      res.json({
-        subscriptionId: paymentIntent.id,
-        clientSecret: paymentIntent.client_secret,
-      });
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
-    }
-  });
-
-  // Stripe webhook
-  app.post('/api/webhook', bodyParser.raw({ type: 'application/json' }), async (req, res) => {
-    const sig = req.headers['stripe-signature'];
-    let event;
-
-    try {
-      if (process.env.STRIPE_WEBHOOK_SECRET) {
-        event = stripe.webhooks.constructEvent(req.body, sig!, process.env.STRIPE_WEBHOOK_SECRET);
-      } else {
-        event = req.body;
-      }
-    } catch (err: any) {
-      return res.status(400).send(`Webhook Error: ${err.message}`);
-    }
-
-    if (event.type === 'checkout.session.completed' || event.type === 'invoice.payment_succeeded') {
-      const session = event.data.object;
-      const customerId = session.customer;
-      
-      // Update user subscription status
-      const users = await storage.getAdminStats(); // This is a placeholder - implement proper user lookup by Stripe customer ID
-      // In real implementation, you'd find the user by stripeCustomerId and update their subscription status
-    }
-
-    res.json({ received: true });
+  // Legacy one-time PaymentIntent activation was unsafe: it granted paid access
+  // before payment confirmation and did not create a recurring subscription.
+  // Keep checkout closed until verified recurring subscriptions and webhook
+  // idempotency are implemented against configured Regular/VIP price IDs.
+  app.post('/api/get-or-create-subscription', isAuthenticated, async (_req, res) => {
+    res.status(503).json({
+      message: "Subscription checkout is temporarily unavailable during the recurring billing rebuild.",
+      code: "SUBSCRIPTION_CHECKOUT_NOT_READY",
+    });
   });
 
   // Admin routes
