@@ -20,6 +20,7 @@ The competitive inspiration is the community-driven music battle experience of t
 This is an active rebuild branch and is not yet production-ready. Legacy repository history is preserved. See:
 - [Product requirements](docs/PRODUCT_REQUIREMENTS.md)
 - [Engineering roadmap and current audit](docs/ENGINEERING_ROADMAP.md)
+- [Deployment and migration notes](docs/DEPLOYMENT.md)
 
 ## Technology
 
