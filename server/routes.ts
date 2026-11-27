@@ -3,8 +3,6 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import {
-  insertBattleSchema,
-  insertTrackSchema,
   insertReferralSchema,
 } from "@shared/schema";
 
