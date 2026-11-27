@@ -170,18 +170,22 @@ export class DatabaseStorage implements IStorage {
 
   // Battle operations
   async getBattles(genreId?: string, status?: string): Promise<Battle[]> {
-    let query = db.select().from(battles);
-    
-    let conditions = [];
-    if (genreId) conditions.push(eq(battles.genreId, genreId));
-    if (status) conditions.push(eq(battles.status, status as any));
-    
-    if (conditions.length > 0) {
-      query = query.where(conditions.length === 1 ? conditions[0] : and(...conditions));
+    if (genreId && status) {
+      return db.select().from(battles)
+        .where(and(eq(battles.genreId, genreId), eq(battles.status, status as any)))
+        .orderBy(desc(battles.createdAt));
     }
-    
-    const results = await query.orderBy(desc(battles.createdAt));
-    return results;
+    if (genreId) {
+      return db.select().from(battles)
+        .where(eq(battles.genreId, genreId))
+        .orderBy(desc(battles.createdAt));
+    }
+    if (status) {
+      return db.select().from(battles)
+        .where(eq(battles.status, status as any))
+        .orderBy(desc(battles.createdAt));
+    }
+    return db.select().from(battles).orderBy(desc(battles.createdAt));
   }
 
   async getBattle(id: string): Promise<Battle | undefined> {
