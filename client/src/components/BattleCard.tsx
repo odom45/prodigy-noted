@@ -9,10 +9,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { Flame, Play, Pause, Clock, Users, Trophy, DollarSign } from "lucide-react";
-import type { Track, Battle as BattleType, User as UserType } from "@shared/schema";
+import type { Track, Battle as BattleType, User as UserType, Genre } from "@shared/schema";
+type BattleWithRelations = BattleType & { creator?: UserType | null; genre?: Genre | null };
 
 interface BattleCardProps {
-  battle: BattleType;
+  battle: BattleWithRelations;
   "data-testid"?: string;
 }
 
@@ -88,7 +89,7 @@ export default function BattleCard({ battle, "data-testid": testId }: BattleCard
     // TODO: Implement actual audio player logic
   };
 
-  const formatTimeRemaining = (endsAt: string) => {
+  const formatTimeRemaining = (endsAt: string | Date) => {
     const end = new Date(endsAt);
     const now = new Date();
     const diff = end.getTime() - now.getTime();
@@ -119,7 +120,7 @@ export default function BattleCard({ battle, "data-testid": testId }: BattleCard
       {/* Artist Info */}
       <div className="flex items-center space-x-4 mb-6">
         <Avatar className="h-12 w-12 border-2 border-neon-cyan">
-          <AvatarImage src={battle.creator?.profileImageUrl} alt="Artist" />
+          <AvatarImage src={battle.creator?.profileImageUrl ?? undefined} alt="Artist" />
           <AvatarFallback className="bg-neon-cyan text-black">
             {battle.creator?.username?.[0]?.toUpperCase() || 'A'}
           </AvatarFallback>
