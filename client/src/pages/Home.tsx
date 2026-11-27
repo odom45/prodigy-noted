@@ -5,11 +5,10 @@ import BattleCard from "@/components/BattleCard";
 import Leaderboard from "@/components/Leaderboard";
 import GenreSelector from "@/components/GenreSelector";
 import SubscriptionPlans from "@/components/SubscriptionPlans";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
-import { Music, Plus } from "lucide-react";
+import { Music } from "lucide-react";
 import type { Genre, Battle, User } from "@shared/schema";
 
 export default function Home() {
@@ -89,30 +88,11 @@ export default function Home() {
                   <p className="text-gray-400 mb-4">
                     {selectedGenre ? "No battles in this genre yet." : "Be the first to start a battle!"}
                   </p>
-                  {user?.role === 'participant' && (
-                    <Button className="bg-gradient-to-r from-neon-cyan to-neon-magenta text-black" data-testid="button-create-battle">
-                      <Plus className="mr-2 h-4 w-4" />
-                      Create Battle
-                    </Button>
-                  )}
                 </CardContent>
               </Card>
             )}
 
             {/* Submit Your Track (Participant Only) */}
-            {user?.role === 'participant' && (
-              <div className="mt-12 text-center">
-                <Button 
-                  size="lg"
-                  className="bg-gradient-to-r from-neon-cyan to-neon-magenta text-black font-bold text-lg px-8 py-4 hover:shadow-neon-cyan transform hover:scale-105 transition-all duration-300"
-                  data-testid="button-submit-track"
-                >
-                  <Plus className="mr-2 h-5 w-5" />
-                  Submit Your Track
-                </Button>
-                <p className="text-sm text-gray-400 mt-2">Import from BandLab or upload directly</p>
-              </div>
-            )}
           </div>
         </section>
 
