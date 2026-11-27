@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { isListenQualified, requiredCompetitorVotes } from "../shared/competition.ts";
+import { isListenQualified, isBattleListenQualified, requiredCompetitorVotes } from "../shared/competition.ts";
 
 test("requires at least half of each track, rounded up to a whole second", () => {
   assert.equal(isListenQualified(30, 60), true);
@@ -29,4 +29,10 @@ test("applies regular and VIP voting quotas, with every third cycle reduced to o
 test("rejects unknown tiers and invalid cycle numbers safely", () => {
   assert.equal(requiredCompetitorVotes("unknown", 1), 0);
   assert.equal(requiredCompetitorVotes("regular", 0), 5);
+});
+
+test("a battle vote requires at least half of both competing tracks", () => {
+  assert.equal(isBattleListenQualified(30, 60, 45, 90), true);
+  assert.equal(isBattleListenQualified(30, 60, 44, 90), false);
+  assert.equal(isBattleListenQualified(29, 60, 90, 90), false);
 });
