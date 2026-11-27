@@ -2,28 +2,33 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - "feature/**"
   pull_request:
     branches: [main]
 
 jobs:
-  build:
+  quality:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install locked dependencies
+        run: npm ci
 
-    - name: Run build
-      run: npm run build
+      - name: Type-check
+        run: npm run check
 
-    - name: Run tests
-      run: npm test
+      - name: Run domain tests
+        run: npm test
+
+      - name: Build production assets
+        run: npm run build
