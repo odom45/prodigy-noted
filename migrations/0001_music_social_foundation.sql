@@ -2,6 +2,8 @@
 -- Apply only after taking a database backup and reviewing existing duplicate votes.
 -- This migration intentionally does not delete or rewrite legacy data.
 
+CREATE UNIQUE INDEX IF NOT EXISTS votes_user_battle_unique ON votes(user_id, battle_id) WHERE user_id IS NOT NULL AND battle_id IS NOT NULL;
+
 CREATE TABLE IF NOT EXISTS artist_profiles (
   id varchar PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id varchar NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
@@ -209,7 +211,7 @@ CREATE TABLE IF NOT EXISTS payout_ledger_entries (
   user_id varchar NOT NULL REFERENCES users(id),
   source_type varchar(24) NOT NULL CHECK (source_type IN ('prize', 'referral', 'royalty', 'adjustment', 'reversal')),
   source_id varchar NOT NULL,
-  amount_cents bigint NOT NULL,
+  amount_cents numeric(18,0) NOT NULL,
   currency varchar(3) NOT NULL DEFAULT 'USD',
   status varchar(16) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'paid', 'reversed', 'rejected')),
   idempotency_key varchar NOT NULL UNIQUE,
