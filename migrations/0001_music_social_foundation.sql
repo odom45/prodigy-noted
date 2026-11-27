@@ -233,3 +233,30 @@ CREATE TABLE IF NOT EXISTS payout_ledger_entries (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS payout_ledger_user_status_idx ON payout_ledger_entries(user_id, status, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS crew_meetings (
+  id varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+  crew_id varchar NOT NULL REFERENCES crews(id) ON DELETE CASCADE,
+  created_by_user_id varchar NOT NULL REFERENCES users(id),
+  title varchar(120) NOT NULL,
+  agenda text,
+  starts_at timestamptz NOT NULL,
+  ends_at timestamptz NOT NULL,
+  meeting_url text,
+  status varchar(16) NOT NULL DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'cancelled', 'completed')),
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  CONSTRAINT crew_meeting_dates_valid CHECK (ends_at > starts_at)
+);
+CREATE INDEX IF NOT EXISTS crew_meetings_crew_start_idx ON crew_meetings(crew_id, starts_at);
+
+CREATE TABLE IF NOT EXISTS crew_meeting_attendees (
+  id varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+  meeting_id varchar NOT NULL REFERENCES crew_meetings(id) ON DELETE CASCADE,
+  user_id varchar NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  response varchar(16) NOT NULL DEFAULT 'invited' CHECK (response IN ('invited', 'accepted', 'declined', 'tentative')),
+  responded_at timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  CONSTRAINT crew_meeting_attendee_unique UNIQUE (meeting_id, user_id)
+);
+
