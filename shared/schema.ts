@@ -351,6 +351,34 @@ export const payoutLedgerEntries = pgTable("payout_ledger_entries", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+
+export const crewMeetings = pgTable("crew_meetings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  crewId: varchar("crew_id").notNull().references(() => crews.id, { onDelete: "cascade" }),
+  createdByUserId: varchar("created_by_user_id").notNull().references(() => users.id),
+  title: varchar("title", { length: 120 }).notNull(),
+  agenda: text("agenda"),
+  startsAt: timestamp("starts_at", { withTimezone: true }).notNull(),
+  endsAt: timestamp("ends_at", { withTimezone: true }).notNull(),
+  meetingUrl: text("meeting_url"),
+  status: varchar("status", { enum: ["scheduled", "cancelled", "completed"] }).notNull().default("scheduled"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  index("crew_meetings_crew_start_idx").on(table.crewId, table.startsAt),
+]);
+
+export const crewMeetingAttendees = pgTable("crew_meeting_attendees", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  meetingId: varchar("meeting_id").notNull().references(() => crewMeetings.id, { onDelete: "cascade" }),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  response: varchar("response", { enum: ["invited", "accepted", "declined", "tentative"] }).notNull().default("invited"),
+  respondedAt: timestamp("responded_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  uniqueIndex("crew_meeting_attendee_unique").on(table.meetingId, table.userId),
+]);
+
 // Relations
 export const usersRelations = relations(users, ({ many, one }) => ({
   battles: many(battles),
