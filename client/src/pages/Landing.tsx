@@ -60,7 +60,7 @@ export default function Landing() {
               Join the Battle
             </Button>
             <p className="text-sm text-gray-400">
-              Free to listen • $4.99/month to compete
+              Free to listen and vote • subscription plus progression unlocks competition
             </p>
           </div>
 
@@ -85,8 +85,8 @@ export default function Landing() {
             <Card className="glass-morphism border-neon-green/30 hover:border-neon-green/60 transition-all duration-300" data-testid="card-feature-earn">
               <CardContent className="p-6 text-center">
                 <Zap className="h-12 w-12 text-neon-green mx-auto mb-4" />
-                <h3 className="font-bold text-xl mb-2">Real Rewards</h3>
-                <p className="text-gray-400">Prize pools, exposure, and direct monetization for top-performing artists.</p>
+                <h3 className="font-bold text-xl mb-2">Seasonal Recognition</h3>
+                <p className="text-gray-400">Rankings, seasonal placement, and a path to the annual championship.</p>
               </CardContent>
             </Card>
           </div>
