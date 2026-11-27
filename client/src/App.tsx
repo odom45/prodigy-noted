@@ -8,6 +8,7 @@ import Home from "@/pages/Home";
 import Landing from "@/pages/Landing";
 import AdminDashboard from "@/pages/AdminDashboard";
 import Subscribe from "@/pages/Subscribe";
+import OnboardingFlow from "@/pages/OnboardingFlow";
 import NotFound from "@/pages/not-found";
 
 function Router() {
