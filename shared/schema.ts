@@ -1,6 +1,7 @@
 import { sql } from 'drizzle-orm';
 import {
   index,
+  uniqueIndex,
   jsonb,
   pgTable,
   timestamp,
@@ -45,8 +46,8 @@ export const users = pgTable("users", {
 export const genres = pgTable("genres", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: varchar("name").notNull().unique(),
-  maxTrialSlots: integer("max_trial_slots").default(100),
-  filledTrialSlots: integer("filled_trial_slots").default(0),
+  maxTrialSlots: integer("max_trial_slots").notNull().default(100),
+  filledTrialSlots: integer("filled_trial_slots").notNull().default(0),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -80,7 +81,9 @@ export const votes = pgTable("votes", {
   trackId: varchar("track_id").references(() => tracks.id),
   battleId: varchar("battle_id").references(() => battles.id),
   createdAt: timestamp("created_at").defaultNow(),
-});
+}, (table) => [
+  uniqueIndex("votes_user_battle_unique").on(table.userId, table.battleId),
+]);
 
 export const referrals = pgTable("referrals", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
