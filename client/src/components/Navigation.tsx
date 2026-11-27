@@ -85,10 +85,10 @@ export default function Navigation() {
             {/* Role Badge */}
             {user && (
               <Badge 
-                className={getRoleColor(user.role)}
+                className={getRoleColor(user.role ?? "listener")}
                 data-testid="badge-user-role"
               >
-                {user.role}
+                {user.role ?? "listener"}
               </Badge>
             )}
 
@@ -97,7 +97,7 @@ export default function Navigation() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="relative" data-testid="button-user-menu">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={user?.profileImageUrl} alt={user?.username || 'User'} />
+                    <AvatarImage src={user?.profileImageUrl ?? undefined} alt={user?.username || 'User'} />
                     <AvatarFallback className="bg-neon-magenta text-black">
                       {user?.username?.[0]?.toUpperCase() || user?.firstName?.[0]?.toUpperCase() || 'U'}
                     </AvatarFallback>
