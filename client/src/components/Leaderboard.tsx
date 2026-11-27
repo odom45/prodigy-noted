@@ -3,17 +3,18 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { Crown, Trophy, Medal, Megaphone, Star } from "lucide-react";
+import type { User } from "@shared/schema";
 
 interface LeaderboardProps {
   "data-testid"?: string;
 }
 
 export default function Leaderboard({ "data-testid": testId }: LeaderboardProps) {
-  const { data: topArtists = [], isLoading: artistsLoading } = useQuery({
+  const { data: topArtists = [], isLoading: artistsLoading } = useQuery<Array<{ user: User; totalVotes: number }>>({
     queryKey: ["/api/leaderboard/artists", "10"],
   });
 
-  const { data: topReferrers = [], isLoading: referrersLoading } = useQuery({
+  const { data: topReferrers = [], isLoading: referrersLoading } = useQuery<Array<{ user: User; referralCount: number }>>({
     queryKey: ["/api/leaderboard/referrers", "10"],
   });
 
