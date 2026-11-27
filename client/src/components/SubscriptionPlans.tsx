@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import type { Genre } from "@shared/schema";
 import { 
   Headphones, 
   Mic, 
@@ -30,7 +31,7 @@ export default function SubscriptionPlans({ user, "data-testid": testId }: Subsc
   const [trialDialogOpen, setTrialDialogOpen] = useState(false);
   const [socialPost, setSocialPost] = useState("");
 
-  const { data: genres = [] } = useQuery({
+  const { data: genres = [] } = useQuery<Genre[]>({
     queryKey: ["/api/genres"],
   });
 
