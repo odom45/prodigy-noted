@@ -60,25 +60,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/battles', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      
-      if (user?.role !== 'participant') {
-        return res.status(403).json({ message: "Only participants can create battles" });
-      }
-
-      const battleData = insertBattleSchema.parse({
-        ...req.body,
-        createdById: userId,
-      });
-
-      const battle = await storage.createBattle(battleData);
-      res.json(battle);
-    } catch (error) {
-      res.status(400).json({ message: "Invalid battle data" });
-    }
+  // Legacy battle creation is closed until server-side subscription and XP/win unlock checks exist.
+  app.post('/api/battles', isAuthenticated, async (_req, res) => {
+    res.status(503).json({
+      message: "Battle entry is temporarily unavailable while paid membership and progression checks are rebuilt.",
+      code: "COMPETITION_ENTRY_NOT_READY",
+    });
   });
 
   // Track routes
@@ -91,25 +78,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/tracks', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      
-      if (user?.role !== 'participant') {
-        return res.status(403).json({ message: "Only participants can submit tracks" });
-      }
-
-      const trackData = insertTrackSchema.parse({
-        ...req.body,
-        artistId: userId,
-      });
-
-      const track = await storage.createTrack(trackData);
-      res.json(track);
-    } catch (error) {
-      res.status(400).json({ message: "Invalid track data" });
-    }
+  // Legacy direct URL track submission is closed until verified object-storage upload,
+  // rights declaration, duration extraction, and moderation checks are implemented.
+  app.post('/api/tracks', isAuthenticated, async (_req, res) => {
+    res.status(503).json({
+      message: "Track submissions are temporarily unavailable while secure audio uploads are rebuilt.",
+      code: "TRACK_UPLOAD_NOT_READY",
+    });
   });
 
   // Voting is intentionally closed until server-verified 50% listening sessions
@@ -161,21 +136,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/trial-slots', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const { genreId } = req.body;
-      
-      const availableSlots = await storage.getAvailableTrialSlots(genreId);
-      if (availableSlots <= 0) {
-        return res.status(400).json({ message: "No trial slots available for this genre" });
-      }
-
-      const trialSlot = await storage.grantTrialSlot(userId, genreId);
-      res.json(trialSlot);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to grant trial slot" });
-    }
+  // Retire the legacy social-post trial grant; competition access will use explicit
+  // Regular/VIP entitlements plus server-calculated progression requirements.
+  app.post('/api/trial-slots', isAuthenticated, async (_req, res) => {
+    res.status(410).json({
+      message: "Social-post trial upgrades have been retired.",
+      code: "LEGACY_TRIAL_RETIRED",
+    });
   });
 
   // Referral routes
