@@ -16,3 +16,14 @@ export function requiredCompetitorVotes(tier: string, cycleNumber: number): numb
   if (Number.isInteger(cycleNumber) && cycleNumber > 0 && cycleNumber % 3 === 0) return 1;
   return tier === "vip" ? 3 : 5;
 }
+
+/** Both competitors must independently meet the same 50% listen threshold. */
+export function isBattleListenQualified(
+  sideAListenedSeconds: number,
+  sideADurationSeconds: number,
+  sideBListenedSeconds: number,
+  sideBDurationSeconds: number,
+): boolean {
+  return isListenQualified(sideAListenedSeconds, sideADurationSeconds)
+    && isListenQualified(sideBListenedSeconds, sideBDurationSeconds);
+}
