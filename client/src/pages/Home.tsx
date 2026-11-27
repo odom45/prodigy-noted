@@ -29,10 +29,7 @@ export default function Home() {
     setSelectedGenre(genreId);
   };
 
-  const handleBandLabConnect = () => {
-    // TODO: Implement OAuth flow with BandLab
-    alert('Connecting to BandLab...\n(Demo: This would initiate OAuth flow)');
-  };
+
 
   return (
     <div className="min-h-screen bg-deep-black">
@@ -138,54 +135,32 @@ export default function Home() {
           </section>
         )}
 
-        {/* BandLab Integration Section */}
+        {/* Creator studio roadmap */}
         <section className="py-16 px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="font-orbitron font-bold text-4xl mb-6">
               <span className="bg-gradient-to-r from-neon-cyan to-neon-magenta bg-clip-text text-transparent">
-                BandLab Integration
+                Prodigy Creator Studio
               </span>
             </h2>
             <p className="text-xl text-gray-300 mb-8">
-              Import your tracks directly from BandLab and enter battles instantly
+              Record, shape, and collaborate on your music without leaving the artist community.
             </p>
-
-            <Card className="glass-morphism max-w-2xl mx-auto mb-8" data-testid="bandlab-integration-card">
-              <CardContent className="p-8">
-                <div className="flex items-center justify-center space-x-6 mb-8">
-                  <div className="text-center">
-                    <div className="w-20 h-20 mx-auto mb-4 rounded-xl bg-gradient-to-r from-neon-cyan to-neon-magenta flex items-center justify-center">
-                      <span className="font-orbitron font-bold text-2xl text-black">PN</span>
-                    </div>
-                    <p className="font-semibold">Prodigy Noted</p>
-                  </div>
-                  
-                  <div className="text-4xl text-neon-purple animate-float">
-                    <Music />
-                  </div>
-                  
-                  <div className="text-center">
-                    <div className="w-20 h-20 mx-auto mb-4 rounded-xl bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center">
-                      <span className="font-bold text-2xl text-white">BL</span>
-                    </div>
-                    <p className="font-semibold">BandLab</p>
-                  </div>
+            <Card className="glass-morphism max-w-2xl mx-auto">
+              <CardContent className="p-8 text-left">
+                <div className="flex items-center gap-3 mb-4">
+                  <Music className="h-8 w-8 text-neon-cyan" />
+                  <h3 className="text-xl font-semibold">Studio development roadmap</h3>
                 </div>
-
-                <Button 
-                  onClick={handleBandLabConnect}
-                  className="bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold px-8 py-4 hover:shadow-lg transform hover:scale-105 transition-all duration-300"
-                  data-testid="button-connect-bandlab"
-                >
-                  <Music className="mr-2 h-5 w-5" />
-                  Connect BandLab Account
-                </Button>
-                
-                <div className="mt-6 text-sm text-gray-400 space-y-1">
-                  <p>✓ Import tracks with one click</p>
-                  <p>✓ Maintain your BandLab profile link</p>
-                  <p>✓ Cross-promote your content</p>
-                </div>
+                <ul className="space-y-2 text-sm text-gray-300">
+                  <li>• Record from a microphone or import an audio file.</li>
+                  <li>• Arrange tracks on a multitrack timeline and make edits.</li>
+                  <li>• Add EQ, compression, reverb, delay, and mix controls.</li>
+                  <li>• Invite crew members to collaborate on shared projects.</li>
+                </ul>
+                <p className="mt-5 text-xs text-gray-500">
+                  Studio features and external music-service connections are not yet available. No BandLab account connection or import is being advertised until an official supported integration is verified.
+                </p>
               </CardContent>
             </Card>
           </div>
